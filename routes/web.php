@@ -10,3 +10,5 @@ Route::get('/', function () {
 Route::post('/images', [ImageController::class, 'store']);
 
 Route::get('/images', [ImageController::class, 'index']);
+
+Route::get('/images', [ImageController::class, 'getImages']);
