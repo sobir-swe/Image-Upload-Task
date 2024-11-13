@@ -83,6 +83,8 @@ class ImageController extends Controller
             return [
                 'id' => $image->id,
                 'url' => Storage::url($image->path),
+                'width' => $image->width,
+                'height' => $image->height,
             ];
         });
 
