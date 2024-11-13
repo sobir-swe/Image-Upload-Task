@@ -11,6 +11,13 @@ class ImageControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function setUp(): void
+    {
+        parent::setUp();
+        $this->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
+    }
+
+
     public function test_store_image_with_valid_data()
     {
         $imageUrl = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSuIwDBbHmIWaEpkVpBTnOeUhisIR3dl1Urg&s';
