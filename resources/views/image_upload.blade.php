@@ -70,10 +70,6 @@
                     });
             },
             submitForm() {
-                if (this.imageValidationError) {
-                    return;
-                }
-
                 const formData = {
                     url: this.url,
                     width: this.width,
@@ -92,7 +88,12 @@
                         }
                     })
                     .catch(error => {
-                        alert('Error uploading image.');
+                        if (error.response && error.response.data && error.response.data.error) {
+                            this.imageValidationError = true;
+                            alert(error.response.data.error);
+                        } else {
+                            alert('Error uploading image.');
+                        }
                     });
             },
             validateImage() {
@@ -108,14 +109,11 @@
                 image.src = this.url;
             },
             checkDimensions() {
-                if (!this.imageWidth || !this.imageHeight) {
-                    return;
+                if (this.width > this.imageWidth || this.height > this.imageHeight) {
+                    this.imageValidationError = true;
+                } else {
+                    this.imageValidationError = false;
                 }
-
-                const inputWidth = parseInt(this.width);
-                const inputHeight = parseInt(this.height);
-
-                this.imageValidationError = (inputWidth > this.imageWidth || inputHeight > this.imageHeight);
             }
         },
         mounted() {
