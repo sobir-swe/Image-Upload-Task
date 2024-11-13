@@ -90,7 +90,8 @@ class ImageController extends Controller
         return response()->json(['images' => $images]);
     }
 
-    public function getImages() {
+    public function getImages(): \Illuminate\Http\JsonResponse
+    {
         $images = Image::all();
         return response()->json(['images' => $images]);
     }
