@@ -89,4 +89,10 @@ class ImageController extends Controller
 
         return response()->json(['images' => $images]);
     }
+
+    public function getImages() {
+        $images = Image::all();
+        return response()->json(['images' => $images]);
+    }
+
 }
