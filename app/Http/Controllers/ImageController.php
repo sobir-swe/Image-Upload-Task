@@ -41,19 +41,18 @@ class ImageController extends Controller
             ], 400);
         }
 
-        $width = 200;
-        $height = 200;
-
         $imageResource = imagecreatefromstring($imageContents);
-        $resizedImage = imagecreatetruecolor($width, $height);
-        imagecopyresampled($resizedImage, $imageResource, 0, 0, 0, 0, $width, $height, $originalWidth, $originalHeight);
+        $resizedImage = imagecreatetruecolor(200, 200);
+
+        imagecopyresampled($resizedImage, $imageResource, 0, 0, 0, 0, 200, 200, $originalWidth, $originalHeight);
 
         if ($text) {
             $textColor = imagecolorallocate($resizedImage, 255, 255, 255);
-            imagestring($resizedImage, 5, 50, 50, $text, $textColor);
+            imagestring($resizedImage, 5, 10, 10, $text, $textColor);
         }
 
         $fileName = 'images/' . uniqid() . '.jpg';
+
         ob_start();
         imagejpeg($resizedImage);
         $imageData = ob_get_clean();
