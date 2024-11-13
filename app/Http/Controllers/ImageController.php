@@ -28,14 +28,14 @@ class ImageController extends Controller
         curl_close($ch);
 
         if ($imageContents === false) {
-            return response()->json(['error' => 'Rasmni olishda xatolik yuz berdi.'], 400);
+            return response()->json(['error' => 'Error fetching image.'], 400);
         }
 
         list($originalWidth, $originalHeight) = getimagesizefromstring($imageContents);
 
         if ($userWidth > $originalWidth || $userHeight > $originalHeight) {
             return response()->json([
-                'error' => 'Kiritilgan o‘lchamlar rasmning haqiqiy o‘lchamlaridan kattaroq. Iltimos, kichik width va height kiriting.',
+                'error' => 'The entered dimensions exceed the original image size. Please enter smaller width and height.',
                 'required_width' => $originalWidth,
                 'required_height' => $originalHeight
             ], 400);
@@ -72,9 +72,9 @@ class ImageController extends Controller
         imagedestroy($resizedImage);
 
         return response()->json([
-            'message' => 'Rasm muvaffaqiyatli yuklab olindi va saqlandi!',
+            'message' => 'Image uploaded and saved successfully!',
             'image_url' => Storage::url($fileName)
-        ], 200);
+        ], 201);
     }
 
     public function index(): \Illuminate\Http\JsonResponse
