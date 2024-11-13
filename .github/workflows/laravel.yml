@@ -33,3 +33,23 @@ jobs:
         DB_CONNECTION: sqlite
         DB_DATABASE: database/database.sqlite
       run: php artisan test
+
+
+  deploy:
+    needs: laravel-tests
+    name: Deploy to DigitalOcean
+    runs-on: ubuntu-latest
+    steps:
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@v1.1.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            set -e
+            cd online-store
+            git reset --hard HEAD
+            git pull
+            docker compose -f docker-compose.production.yml up --build -d
+            docker exec os_app php artisan optimize
