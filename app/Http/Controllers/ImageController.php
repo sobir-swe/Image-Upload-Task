@@ -20,7 +20,7 @@ class ImageController extends Controller
         $url = $request->input('url');
         $userWidth = $request->input('width');
         $userHeight = $request->input('height');
-        $text = $request->input('text', null);
+        $text = $request->input('text');
 
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

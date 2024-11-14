@@ -51,8 +51,8 @@
         </div>
 
         <div class="mb-3">
-            <label for="text" class="form-label">Overlay Text</label>
-            <textarea class="form-control" v-model="text" required></textarea>
+            <label for="overlay_text" class="form-label">Overlay Text</label>
+            <input type="text" class="form-control" v-model="overlayText" required>
         </div>
 
         <button type="submit" class="btn btn-primary" :disabled="imageValidationError || loading">
@@ -84,7 +84,7 @@
             url: '',
             width: '',
             height: '',
-            text: '',
+            overlayText: '',
             images: [],
             imageWidth: 0,
             imageHeight: 0,
@@ -120,7 +120,7 @@
                     url: this.url,
                     width: this.width,
                     height: this.height,
-                    overlayText: this.text,
+                    text: this.overlayText,
                     _token: '{{ csrf_token() }}'
                 };
 
