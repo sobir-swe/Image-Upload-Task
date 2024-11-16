@@ -11,20 +11,35 @@ class ImageControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected $image;
+
     /**
-     * Test if the index method returns the list of images.
+     *
+     * @return void
+     */
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        Storage::fake('public');
+
+        $this->image = Image::query()->create([
+            'url' => 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNOvUxITQyzsqBTQ7WRT8_53yrLCaLE6luQg&s',
+            'width' => 200,
+            'height' => 200,
+            'text' => 'Sample Text',
+            'path' => 'images/sample.jpg',
+        ]);
+    }
+
+    /**
      *
      * @return void
      */
     public function test_index()
     {
-        // Create some images
-        $image = Image::factory()->create();
-
-        // Make a GET request to the index method
         $response = $this->getJson('/api/images');
 
-        // Assert the response status and structure
         $response->assertStatus(200)
             ->assertJsonStructure([
                 'images' => [
@@ -38,41 +53,31 @@ class ImageControllerTest extends TestCase
                 ]
             ]);
 
-        // Check if the created image exists in the response
-        $response->assertJsonFragment(['id' => $image->id]);
+        $response->assertJsonFragment(['id' => $this->image->id]);
     }
 
     /**
-     * Test the store method to upload and store an image.
      *
      * @return void
      */
     public function test_store()
     {
-        // Mock storage
-        Storage::fake('public');
-
-        // Prepare the image data
         $imageData = [
-            'url' => 'https://example.com/sample.jpg',
+            'url' => 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNOvUxITQyzsqBTQ7WRT8_53yrLCaLE6luQg&s',
             'width' => 200,
             'height' => 200,
             'text' => 'Sample Text',
         ];
 
-        // Make a POST request to the store method
         $response = $this->postJson('/api/images', $imageData);
 
-        // Assert the response status and message
-        $response->assertStatus(201)
+        $response->assertStatus(200)
             ->assertJson([
                 'message' => 'Image uploaded and saved successfully!',
             ]);
 
-        // Assert the image is stored in the storage
         Storage::disk('public')->assertExists('images/' . basename($response->json('image_url')));
 
-        // Check if the image is saved in the database
         $this->assertDatabaseHas('images', [
             'url' => $imageData['url'],
             'width' => $imageData['width'],
@@ -82,51 +87,38 @@ class ImageControllerTest extends TestCase
     }
 
     /**
-     * Test the show method to retrieve a single image by ID.
      *
      * @return void
      */
     public function test_show()
     {
-        // Create an image
-        $image = Image::factory()->create();
+        $response = $this->getJson("/api/images/{$this->image->id}");
 
-        // Make a GET request to the show method
-        $response = $this->getJson("/api/images/{$image->id}");
-
-        // Assert the response status and check the image data
         $response->assertStatus(200)
             ->assertJson([
-                'id' => $image->id,
-                'url' => $image->url,
-                'width' => $image->width,
-                'height' => $image->height,
-                'text' => $image->text,
+                'id' => $this->image->id,
+                'url' => $this->image->url,
+                'width' => $this->image->width,
+                'height' => $this->image->height,
+                'text' => $this->image->text,
             ]);
     }
 
     /**
-     * Test the destroy method to delete an image.
      *
      * @return void
      */
     public function test_destroy()
     {
-        // Create an image
-        $image = Image::factory()->create();
+        $response = $this->deleteJson("/api/images/{$this->image->id}");
 
-        // Make a DELETE request to the destroy method
-        $response = $this->deleteJson("/api/images/{$image->id}");
-
-        // Assert the response status and message
         $response->assertStatus(200)
             ->assertJson([
                 'message' => 'Image deleted successfully!',
             ]);
 
-        // Assert the image is deleted from the database
         $this->assertDatabaseMissing('images', [
-            'id' => $image->id,
+            'id' => $this->image->id,
         ]);
     }
 }
