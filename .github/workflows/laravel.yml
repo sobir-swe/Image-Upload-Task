@@ -50,6 +50,7 @@ jobs:
             set -e
             cd Image-Upload-Task
             git reset --hard HEAD
+            # git checkout <branch>
             git pull
             docker compose -f docker-compose.production.yml up --build -d
             docker exec upload_app php artisan optimize
