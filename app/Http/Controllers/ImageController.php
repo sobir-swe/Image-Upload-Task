@@ -2,12 +2,36 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use App\Models\Image;
+use Illuminate\Support\Facades\Storage;
 
 class ImageController extends Controller
 {
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function index(): \Illuminate\Http\JsonResponse
+    {
+        $images = Image::all()->map(function ($image) {
+            return [
+                'id' => $image->id,
+                'url' => Storage::url($image->path),
+                'width' => $image->width,
+                'height' => $image->height,
+                'text' => $image->text,
+            ];
+        });
+
+        return response()->json(['images' => $images]);
+    }
+
+    /**
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(Request $request): \Illuminate\Http\JsonResponse
     {
         $request->validate([
@@ -22,78 +46,49 @@ class ImageController extends Controller
         $userHeight = $request->input('height');
         $text = $request->input('text');
 
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $imageContents = curl_exec($ch);
-        curl_close($ch);
+        $result = ImageHelper::fetchImageAndProcess($url, $userWidth, $userHeight, $text);
 
-        if ($imageContents === false) {
-            return response()->json(['error' => 'Error fetching image.'], 400);
+        if (isset($result['error'])) {
+            return response()->json($result, 400);
         }
 
-        list($originalWidth, $originalHeight) = getimagesizefromstring($imageContents);
-
-        if ($userWidth > $originalWidth || $userHeight > $originalHeight) {
-            return response()->json([
-                'error' => 'The entered dimensions exceed the original image size. Please enter smaller width and height.',
-                'required_width' => $originalWidth,
-                'required_height' => $originalHeight
-            ], 400);
-        }
-
-        $imageResource = imagecreatefromstring($imageContents);
-        $resizedImage = imagecreatetruecolor(200, 200);
-
-        imagecopyresampled($resizedImage, $imageResource, 0, 0, 0, 0, 200, 200, $originalWidth, $originalHeight);
-
-        if ($text) {
-            $textColor = imagecolorallocate($resizedImage, 255, 255, 255);
-            imagestring($resizedImage, 5, 10, 10, $text, $textColor);
-        }
-
-        $fileName = 'images/' . uniqid() . '.jpg';
-
-        ob_start();
-        imagejpeg($resizedImage);
-        $imageData = ob_get_clean();
-
-        Storage::disk('public')->put($fileName, $imageData);
-
-        Image::query()->create([
+        $image = Image::query()->create([
             'url' => $url,
             'width' => $userWidth,
             'height' => $userHeight,
             'text' => $text,
-            'path' => $fileName,
+            'path' => $result['path'],
         ]);
-
-        imagedestroy($imageResource);
-        imagedestroy($resizedImage);
 
         return response()->json([
             'message' => 'Image uploaded and saved successfully!',
-            'image_url' => Storage::url($fileName)
+            'image_url' => $result['image_url'],
         ], 201);
     }
 
-    public function index(): \Illuminate\Http\JsonResponse
+    /**
+     *
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function show(int $id): \Illuminate\Http\JsonResponse
     {
-        $images = Image::all()->map(function ($image) {
-            return [
-                'id' => $image->id,
-                'url' => Storage::url($image->path),
-                'width' => $image->width,
-                'height' => $image->height,
-            ];
-        });
-
-        return response()->json(['images' => $images]);
+        $image = Image::query()->findOrFail($id);
+        return response()->json($image);
     }
 
-    public function getImages(): \Illuminate\Http\JsonResponse
+    /**
+     *
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function destroy(int $id): \Illuminate\Http\JsonResponse
     {
-        $images = Image::all();
-        return response()->json(['images' => $images]);
-    }
+        $image = Image::query()->findOrFail($id);
+        $image->delete();
 
+        return response()->json([
+            'message' => 'Image deleted successfully!',
+        ]);
+    }
 }
