@@ -50,6 +50,7 @@ jobs:
             npm run build
             docker compose -f docker-compose.production.yml up --build -d
             docker exec upload_app sh -c "
+                docker exec upload_app sh -c "
                 composer install --no-dev --optimize-autoloader &&
                 php artisan migrate --force &&
                 php artisan optimize:clear &&
@@ -59,4 +60,5 @@ jobs:
                 php artisan optimize:clear &&
                 chown -R www-data:www-data /var/www/bootstrap/cache &&
                 chmod -R 775 /var/www/bootstrap/cache
-            "
+              "
+
