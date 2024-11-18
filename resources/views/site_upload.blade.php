@@ -64,17 +64,17 @@
 
     <form id="imageForm" onsubmit="submitForm(event)">
         <div class="mb-3">
-            <label for="url" class="form-label">Image URL</label>
+            <label for="url" class="form-label">Site URL</label>
             <input type="text" class="form-control" id="url" required>
         </div>
 
         <div class="mb-3 d-flex">
             <div class="me-3" style="flex: 1;">
-                <label for="width" class="form-label">Width</label>
+                <label for="width" class="form-label">MIN Width</label>
                 <input type="number" class="form-control" id="width" required>
             </div>
             <div class="me-3" style="flex: 1;">
-                <label for="height" class="form-label">Height</label>
+                <label for="height" class="form-label">MIN Height</label>
                 <input type="number" class="form-control" id="height" required>
             </div>
         </div>
@@ -116,7 +116,6 @@
 <script>
     let images = [];
 
-    // Listen for theme switcher changes
     document.getElementById('chk').addEventListener('change', () => {
         if (document.getElementById('chk').checked) {
             document.body.classList.remove('light-mode');
@@ -132,7 +131,7 @@
     });
 
     function fetchImages() {
-        axios.get('/api/images')
+        axios.get('/api/sites')
             .then(response => {
                 if (response.data.images && response.data.images.length > 0) {
                     images = response.data.images;
@@ -186,7 +185,7 @@
         document.getElementById('loader').style.display = 'inline-block';
         document.getElementById('submitText').style.display = 'none';
 
-        axios.post('/api/images', formData)
+        axios.post('/api/sites', formData)
             .then(response => {
                 document.getElementById('submitBtn').disabled = false;
                 document.getElementById('loader').style.display = 'none';
@@ -210,12 +209,28 @@
                     alert('Error uploading image.');
                 }
             });
+        const imageElements = document.querySelectorAll('img');
+        let largeImagesCount = 0;
+
+        imageElements.forEach(image => {
+            if (image.complete) {
+                if (image.naturalWidth > width && image.naturalHeight > height) {
+                    largeImagesCount++;
+                }
+            } else {
+                image.onload = () => {
+                    if (image.naturalWidth > width && image.naturalHeight > height) {
+                        largeImagesCount++;
+                    }
+                };
+            }
+        });
     }
 
     function deleteImage(index) {
         const imageId = images[index].id;
 
-        axios.delete(`/api/images/${imageId}`)
+        axios.delete(`/api/sites/${imageId}`)
             .then(response => {
                 alert('Image deleted successfully!');
                 images.splice(index, 1);
@@ -225,6 +240,20 @@
                 alert('Error deleting image: ' + error);
             });
     }
+
+    function displayProcessedImages(images) {
+        const gallery = document.getElementById('imageGallery');
+        gallery.innerHTML = ''; // Clear previous images
+
+        images.forEach(image => {
+            const imgElement = document.createElement('img');
+            imgElement.src = image.url;
+            imgElement.alt = 'Processed Image';
+            imgElement.classList.add('img-fluid', 'rounded');
+            gallery.appendChild(imgElement);
+        });
+    }
+
 </script>
 </body>
 </html>
