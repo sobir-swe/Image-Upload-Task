@@ -53,4 +53,7 @@ jobs:
                 php artisan migrate --force &&
                 php artisan optimize:clear &&
                 php artisan storage:link
+                php artisan config:clear
+                php artisan cache:clear
+                php artisan optimize:clear
             "
