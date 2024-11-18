@@ -56,4 +56,6 @@ jobs:
                 php artisan config:clear
                 php artisan cache:clear
                 php artisan optimize:clear
+                chown -R www-data:www-data /var/www/bootstrap/cache
+                chmod -R 775 /var/www/bootstrap/cache
             "
