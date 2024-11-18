@@ -70,11 +70,11 @@
 
         <div class="mb-3 d-flex">
             <div class="me-3" style="flex: 1;">
-                <label for="width" class="form-label">Width</label>
+                <label for="width" class="form-label">MIN Width</label>
                 <input type="number" class="form-control" id="width" required>
             </div>
             <div class="me-3" style="flex: 1;">
-                <label for="height" class="form-label">Height</label>
+                <label for="height" class="form-label">MIN Height</label>
                 <input type="number" class="form-control" id="height" required>
             </div>
         </div>
@@ -225,6 +225,7 @@
                 alert('Error deleting image: ' + error);
             });
     }
+
 </script>
 </body>
 </html>
