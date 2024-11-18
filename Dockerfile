@@ -18,7 +18,14 @@ RUN apt-get update && apt-get install -y \
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 COPY . /var/www
+
 RUN composer install
 
 RUN chown -R www-data:www-data /var/www
 RUN chmod -R 755 /var/www
+
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get install -y nodejs
+
+RUN npm install \
+    && npm run build

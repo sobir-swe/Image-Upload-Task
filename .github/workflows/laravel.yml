@@ -55,8 +55,4 @@ jobs:
                 php artisan optimize:clear &&
                 chown -R www-data:www-data /var/www/bootstrap/cache &&
                 chmod -R 775 /var/www/bootstrap/cache
-                curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-                sudo apt-get install -y nodejs
-                npm install
-                npm run build
             "
