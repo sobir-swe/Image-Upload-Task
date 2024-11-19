@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('width');
             $table->integer('height');
             $table->string('text')->nullable();
-
+//            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }

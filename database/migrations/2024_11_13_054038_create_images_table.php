@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('url');
             $table->integer('width');
             $table->integer('height');
+//            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('site_url')->nullable();
             $table->string('text')->nullable();
             $table->string('path')->nullable();
             $table->timestamps();
