@@ -61,7 +61,7 @@
     <h2>Image Processing</h2>
     <form id="imageForm" onsubmit="submitForm(event)">
         <div class="mb-3">
-            <label for="url" class="form-label">Image URL</label>
+            <label for="url" class="form-label">URL</label>
             <input type="text" class="form-control" id="url" required>
         </div>
         <div class="mb-3 d-flex">

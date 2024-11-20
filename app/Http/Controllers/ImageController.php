@@ -9,10 +9,6 @@ use Illuminate\Support\Facades\Storage;
 
 class ImageController extends Controller
 {
-    public function showGallery(): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
-    {
-        return view('gallery');
-    }
 
     /**
      * @return \Illuminate\Http\JsonResponse

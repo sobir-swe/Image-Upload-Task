@@ -131,7 +131,7 @@
     });
 
     function fetchImages() {
-        axios.get('/api/sites')
+        axios.get('/api/images')
             .then(response => {
                 if (response.data.images && response.data.images.length > 0) {
                     images = response.data.images;
